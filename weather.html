@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-color: #1a202c;
+        color: #cbd5e0;
+      }
+      input,
+      button {
+        background-color: #2d3748;
+        border: none;
+        outline: none;
+      }
+      input::placeholder {
+        color: #718096;
+      }
+      button:hover {
+        background-color: #4a5568;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-sm text-center">
+      <h1 class="text-2xl font-semibold mb-4">Cuaca Saat Ini</h1>
+
+      <input id="cityInput" type="text" placeholder="Masukkan nama kota" class="px-3 py-3 rounded w-full mb-4" />
+
+      <button onclick="getWeather()" class="bg-gray-700 rounded py-2 px-4 rounded hover:bg-gray-700 transition">Cek Cuaca</button>
+
+      <div id="weatherResult" class="mt-6"></div>
+    </div>
+
+    <script>
+      const apiKey = "cdcf5e13cb9d4da9b3b231058251105";
+
+      async function getWeather() {
+        const city = document.getElementById("cityInput").value.trim();
+        if (!city) {
+          document.getElementById("weatherResult").innerText = "Masukkan nama kota terlebih dahulu.";
+          return;
+        }
+
+        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(city)}&lang=id`;
+
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (data.current) {
+            document.getElementById("weatherResult").innerHTML = `
+              <h2 class="text-xl font-medium">${data.location.name}, ${data.location.country}</h2>
+              <p class="capitalize my-2">${data.current.condition.text}</p>
+              <img src="${data.current.condition.icon}" alt="icon" class="mx-auto">
+              <p class="text-lg font-semibold">${data.current.temp_c}°C</p>
+            `;
+          } else {
+            document.getElementById("weatherResult").innerText = "Data tidak ditemukan.";
+          }
+        } catch (error) {
+          document.getElementById("weatherResult").innerText = "Gagal mengambil data cuaca.";
+        }
+      }
+    </script>
+  </body>
+</html>
